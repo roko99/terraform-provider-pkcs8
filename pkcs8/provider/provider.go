@@ -9,7 +9,7 @@ import (
 	"terraform-provider-pkcs8/pkcs8/resources"
 )
 
-// Provider returns the Terraform provider for DER conversion
+// Provider returns the Terraform provider for PKCS8 conversion
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{},
@@ -23,7 +23,7 @@ func Provider() *schema.Provider {
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	// No provider-level configuration needed for DER conversion
+	// No provider-level configuration needed for PKCS8 conversion
 	var diags diag.Diagnostics
 	return nil, diags
 }

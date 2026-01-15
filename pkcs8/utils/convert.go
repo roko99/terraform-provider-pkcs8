@@ -3,7 +3,7 @@ package utils
 import (
 	"crypto/ecdsa"
 	"crypto/rsa"
-	"crypto/sha1"
+	"crypto/sha256"
 	"crypto/x509"
 	"encoding/hex"
 	"encoding/pem"
@@ -82,6 +82,6 @@ func GenerateID(value string) string {
 	if value == "" {
 		return ""
 	}
-	hash := sha1.Sum([]byte(strings.TrimSpace(value)))
+	hash := sha256.Sum256([]byte(strings.TrimSpace(value)))
 	return hex.EncodeToString(hash[:])
 }

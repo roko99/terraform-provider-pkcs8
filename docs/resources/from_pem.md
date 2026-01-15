@@ -39,5 +39,5 @@ resource "local_file" "key" {
 
 - All RSA and EC keys are standardized to PKCS#8 format in the output
 - Encrypted private keys are not supported; only unencrypted keys are accepted
-- The resource uses SHA1 hash of the input key to generate a unique ID
+- The resource uses SHA256 hash of the input key to generate a unique ID
 - All sensitive inputs and outputs are marked as sensitive

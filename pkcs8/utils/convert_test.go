@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -10,7 +12,10 @@ import (
 
 func TestKeyPEMToPKCS8RSA(t *testing.T) {
 	// Generate a test RSA private key
-	privateKey, _ := rsa.GenerateKey(rand.Reader, 2048)
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatalf("Failed to generate RSA private key: %v", err)
+	}
 
 	// Convert to PKCS#1 PEM format (RSA PRIVATE KEY)
 	privKeyBytes := x509.MarshalPKCS1PrivateKey(privateKey)
@@ -37,6 +42,44 @@ func TestKeyPEMToPKCS8RSA(t *testing.T) {
 
 	if _, ok := parsedKey.(*rsa.PrivateKey); !ok {
 		t.Fatal("Parsed key is not an RSA private key")
+	}
+}
+
+func TestKeyPEMToPKCS8EC(t *testing.T) {
+	// Generate a test EC private key
+	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatalf("Failed to generate EC private key: %v", err)
+	}
+
+	// Convert to SEC1 PEM format (EC PRIVATE KEY)
+	privKeyBytes, err := x509.MarshalECPrivateKey(privateKey)
+	if err != nil {
+		t.Fatalf("Failed to marshal EC private key: %v", err)
+	}
+	keyPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "EC PRIVATE KEY",
+		Bytes: privKeyBytes,
+	})
+
+	// Test KeyPEMToPKCS8
+	result, err := KeyPEMToPKCS8(keyPEM)
+	if err != nil {
+		t.Fatalf("KeyPEMToPKCS8 failed: %v", err)
+	}
+
+	if len(result) == 0 {
+		t.Fatal("KeyPEMToPKCS8 returned empty result")
+	}
+
+	// Should return valid PKCS#8 format
+	parsedKey, err := x509.ParsePKCS8PrivateKey(result)
+	if err != nil {
+		t.Fatalf("Failed to parse PKCS#8 key: %v", err)
+	}
+
+	if _, ok := parsedKey.(*ecdsa.PrivateKey); !ok {
+		t.Fatal("Parsed key is not an EC private key")
 	}
 }
 
