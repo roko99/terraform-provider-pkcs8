@@ -42,10 +42,16 @@ func TestKeyPEMToPKCS8RSA(t *testing.T) {
 
 func TestKeyPEMToPKCS8AlreadyPKCS8(t *testing.T) {
 	// Generate a test RSA private key
-	privateKey, _ := rsa.GenerateKey(rand.Reader, 2048)
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatalf("Failed to generate RSA private key: %v", err)
+	}
 
 	// Convert to PKCS#8 PEM format
-	privKeyBytes, _ := x509.MarshalPKCS8PrivateKey(privateKey)
+	privKeyBytes, err := x509.MarshalPKCS8PrivateKey(privateKey)
+	if err != nil {
+		t.Fatalf("Failed to marshal PKCS#8 private key: %v", err)
+	}
 	keyPEM := pem.EncodeToMemory(&pem.Block{
 		Type:  "PRIVATE KEY",
 		Bytes: privKeyBytes,
